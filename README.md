@@ -1,1 +1,0 @@
-# docker-Django-Nginx-Postgres
