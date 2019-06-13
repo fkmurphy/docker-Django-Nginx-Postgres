@@ -2,13 +2,18 @@ version: '3'
 
 services:
   djangoapp:
-    build: ./django/.
+    build:
+      context: ./django
+      dockerfile: Dockerfile
+      args:
+        - USER_ID=${USER_ID}
     env_file:
       - ./django/django_env
+    command: python manage.py runserver 0.0.0.0:8000
+    #command: gunicorn --bind 0.0.0.0:8000 app.wsgi
     volumes:
-      - ./django/app:/backend/app
-      - ./django/media:/backend/media
-      - ./django/static:/backend/static
+      - ~/docker/django/backend:/backend
+      - ./ssh-keys:/root/.ssh
     networks:
       - nginx_network
       - db_network
@@ -20,8 +25,8 @@ services:
       - 80:80
     volumes:
       - ./nginx/config/conf.d:/etc/nginx/conf.d
-      - ./django/media:/opt/django/media
-      - ./django/static:/opt/django/static
+      - ./django/backend/media:/opt/django/media
+      - ./django/backend/static:/opt/django/static
     depends_on:
       - djangoapp
     networks:
